@@ -12,11 +12,11 @@ class RepliesController extends Controller
     }
     /**
      * Persist a new reply.
-     *
+     * @param $channelID
      * @param  Thread $thread
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function store(Thread $thread)
+    public function store($channelID, Thread $thread)
     {
         $thread->addReply([
             'body' => request('body'),
