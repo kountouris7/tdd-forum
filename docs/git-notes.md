@@ -1,3 +1,4 @@
+# git notes
 ### get status of branch
 ###### git status
 ### add all files to stage to be committed
