@@ -9,3 +9,5 @@
 ###### git commit -m"messege here with quotes"
 ### push to origin (remote)
 ###### git push origin
+
+mpravo mate!depou tnt terminal mou?
