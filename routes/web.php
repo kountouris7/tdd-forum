@@ -6,8 +6,8 @@ Route::get('/', function () {
 Auth::routes();
 
 Route::get('/home', 'HomeController@index');
-Route::get('/threads', 'ThreadsController@index');
-Route::get('/threads/create', 'ThreadsController@create');
+Route::get('/threads', 'ThreadsController@index')->name('threads');
+Route::get('/threads/create', 'ThreadsController@create')->name('threadsCreate');
 Route::get('/threads/{channel}/{thread}', 'ThreadsController@show');
 Route::post('/threads', 'ThreadsController@store');
 Route::get('threads/{channel}', 'ThreadsController@index');
