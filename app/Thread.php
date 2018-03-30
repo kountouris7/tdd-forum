@@ -15,6 +15,8 @@ class Thread extends Model
      */
     protected $guarded = [];
 
+    protected $with = ['creator', 'channel'];
+
     /**
      * Get a string path for the thread.
      *
