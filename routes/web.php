@@ -1,6 +1,8 @@
 <?php
 
 
+use App\Http\Controllers\FavoritesController;
+use App\User;
 
 Route::get('/', function () {
     return view('welcome');
