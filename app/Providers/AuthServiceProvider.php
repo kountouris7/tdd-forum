@@ -26,7 +26,7 @@ class AuthServiceProvider extends ServiceProvider
         $this->registerPolicies();
 
         Gate::before(function ($user) {
-            if ($user->name === 'Jodie Mc Froster') return true; //makes user act as administrator
+            //if ($user->name === 'Jodie Mc Froster') return true; //makes user act as administrator
         });
     }
 }
