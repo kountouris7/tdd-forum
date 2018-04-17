@@ -3,9 +3,7 @@
 namespace Tests\Feature;
 
 use Illuminate\Foundation\Testing\DatabaseMigrations;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Tests\TestCase;
-
 
 class CreateThreadsTest extends TestCase
 {
@@ -26,24 +24,22 @@ class CreateThreadsTest extends TestCase
     /** @test */
     function an_authenticated_user_can_create_new_forum_threads()
     {
-        //Given we have an auth user
         $this->signIn();
-        //$this->actingAs(create('App\User'));
-        //When we hit the endpoint to create new thread
-        $thread = make('App\Thread'); //make doesnt persist to create a thread in database
-        $response= $this->post('/threads', $thread->toArray());
-        //Then we visit the new page
+
+        $thread = make('App\Thread');
+
+        $response = $this->post('/threads', $thread->toArray());
+
         $this->get($response->headers->get('Location'))
-            //We should see the new thread
-        ->assertSee($thread->title)
-        ->assertSee($thread->body);
-        }
+             ->assertSee($thread->title)
+             ->assertSee($thread->body);
+    }
 
     /** @test */
     function a_thread_requires_a_title()
     {
         $this->publishThread(['title' => null])
-            ->assertSessionHasErrors('title');
+             ->assertSessionHasErrors('title');
     }
 
     /** @test */
@@ -52,6 +48,7 @@ class CreateThreadsTest extends TestCase
         $this->publishThread(['body' => null])
              ->assertSessionHasErrors('body');
     }
+
     /** @test */
     function a_thread_requires_a_valid_channel()
     {
@@ -64,11 +61,41 @@ class CreateThreadsTest extends TestCase
              ->assertSessionHasErrors('channel_id');
     }
 
-    public function publishThread($overrides = [])
+    /** @test */
+    function unauthorized_users_may_not_delete_threads()
+    {
+        $this->withExceptionHandling();
+
+        $thread = create('App\Thread');
+
+        $this->delete($thread->path())->assertRedirect('/login');
+
+        $this->signIn();
+        $this->delete($thread->path())->assertStatus(403);
+    }
+
+    /** @test */
+    function authorized_users_can_delete_threads()
+    {
+        $this->signIn();
+
+        $thread = create('App\Thread', ['user_id' => auth()->id()]);
+        $reply = create('App\Reply', ['thread_id' => $thread->id]);
+
+        $response = $this->json('DELETE', $thread->path());
+
+        $response->assertStatus(204);
+
+        $this->assertDatabaseMissing('threads', ['id' => $thread->id]);
+        $this->assertDatabaseMissing('replies', ['id' => $reply->id]);
+    }
+
+    protected function publishThread($overrides = [])
     {
         $this->withExceptionHandling()->signIn();
-        $thread = make('App\Thread', $overrides);
-        return $this->post('/threads', $thread->toArray());
 
+        $thread = make('App\Thread', $overrides);
+
+        return $this->post('/threads', $thread->toArray());
     }
 }
